@@ -6,14 +6,17 @@
 
 int main(int argc, char *argv[]){ // puts in arguments
     
-    //struct rusage rusage;
+//    struct rusage rusage;
+    {
+        /* data */
+    };
+    
 
     if (argc < 2){
         printf("Arguments < 2");
         exit(0);
     }
 
-    int start_time = uptime(); // calls uptime to start before fork
     int pid = fork();          // forks process
 
     if (pid < 0){ // process should not be less than 0
@@ -28,25 +31,16 @@ int main(int argc, char *argv[]){ // puts in arguments
         //printf("In child process\n");
         exit(1);
     }else{
-        int wait_time;
-        wait(&wait_time);
+    //     int wait_time;
+    //     wait2(&wait_time, &rusage);
+    //     uint64 elapsed_time = rusage.cputime;        
+    //     int cpu_usage = (rusage.cputime * 100) / elapsed_time;
 
-        //wait2(&wait_time, &rusage);        
-        //printf("Elapsed time: %d ticks\n", rusage.cputime);
-        //printf("CPU time: %d ticks\n", rusage.cputime);
+    //     printf("Elapsed time: %d ticks\n", rusage.cputime);
+    //     printf("CPU time: %d ticks\n", rusage.cputime);
         
-        int end_time = uptime();
-        
-        //int cpu_usage = (rusage.cputime * 100) / end_time;
-        //int elapsed_time = end_time - start_time;
-        
-        printf("Time: %d\n", end_time - start_time);
-
-        printf("Elapsed time: %d ticks\n", end_time - start_time);
-        //printf("Time: %d ticks\n", rusage.cputime);
-        printf("Elapsed time: %d ticks\n", end_time - start_time);
-        //printf("elapsed time: %d ticks, cpu time: %d ticks, %d%% CPU\n" , rusage.cputime, rusage.cputime, cpu_usage);
-    }
+    //     printf("elapsed time: %d ticks, cpu time: %d ticks, %d%% CPU\n" , rusage.cputime, rusage.cputime, cpu_usage);
+     }
    
     exit(0);
 }

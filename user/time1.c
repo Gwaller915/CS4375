@@ -2,7 +2,6 @@
 #include "kernel/types.h"
 #include "kernel/stat.h"
 #include "user/user.h"
-//#include "kernel/pstat.h"  //task 5 to get access to rsusage
 
 int main(int argc, char *argv[]){ // puts in arguments
     
@@ -30,19 +29,10 @@ int main(int argc, char *argv[]){ // puts in arguments
     }else{
         int wait_time;
         wait(&wait_time);
-        //wait2(&wait_time, &rusage);
-        
-        
-        //printf("Elapsed time: %d ticks\n", rusage.cputime);
-        //printf("CPU time: %d ticks\n", rusage.cputime);
         
         int end_time = uptime();
-        //int cpu_usage = (rusage.cputime * 100) / end_time;
-        //int elapsed_time = end_time - start_time;
         printf("Time: %d\n", end_time - start_time);
-        //printf("Time: %d ticks\n", rusage.cputime);
         printf("Elapsed time: %d ticks\n", end_time - start_time);
-        //printf("elapsed time: %d ticks, cpu time: %d ticks, %d%% CPU\n" , rusage.cputime, rusage.cputime, cpu_usage);
     }
    
     exit(0);
