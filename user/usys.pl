@@ -18,6 +18,7 @@ sub entry {
 entry("fork");
 entry("exit");
 entry("wait");
+entry("wait2");   #add as a system call  task 3.3
 entry("pipe");
 entry("read");
 entry("write");

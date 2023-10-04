@@ -5,8 +5,8 @@
 #include "param.h"
 #include "memlayout.h"
 #include "spinlock.h"
-#include "proc.h"
-
+#include "proc.h"  //added task 3.4
+#include "pstat.h" //added task 3.4
 uint64
 sys_exit(void)
 {
@@ -37,6 +37,35 @@ sys_wait(void)
     return -1;
   return wait(p);
 }
+
+//LPI 552
+//rusage 36.1
+uint64
+sys_wait2(void)         //task 3.5
+{
+
+  uint64 p1;
+  uint64 p2;
+ 
+  //pointer to the struct rusage
+  if(argaddr(0, &p1) < 0)
+    return -1;
+
+  if(argaddr(1, &p2) < 0)
+    return -1;
+  
+  return wait2(p1,p2);
+  // uint64 pid_rusage = wait2(p1,p2);
+  // if(p2 !=0){
+  //   uint64 pid_rusage = wait2(p1,p2);
+  //   return pid_rusage;
+  // }
+  
+  //uint64 pid_rusage = wait2(p,p2);
+  //return pid_rusage;       //how do I return rusuage
+  
+}
+
 
 uint64
 sys_sbrk(void)

@@ -73,6 +73,11 @@ usertrap(void)
     p->killed = 1;
   }
 
+  //user added increments cput time if interrupt happens
+  if(p){
+    p->cputime++;              
+  }
+
   if(p->killed)
     exit(-1);
 
@@ -152,6 +157,14 @@ kerneltrap()
   // give up the CPU if this is a timer interrupt.
   if(which_dev == 2 && myproc() != 0 && myproc()->state == RUNNING)
     yield();
+
+  //user implemented cputime increment increase when interupt happens
+  //pointer to myproc
+    struct proc *curr_proc = myproc();
+    if (curr_proc){
+      curr_proc->cputime++;
+    }
+
 
   // the yield() may have caused some traps to occur,
   // so restore trap registers for use by kernelvec.S's sepc instruction.

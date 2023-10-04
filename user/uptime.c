@@ -9,7 +9,7 @@ int main(){
 		exit(0);
 	}
 
-	printf("up %d clock ticks", ticks);
+	printf("up %d clock ticks\n", ticks);
 
 
 	exit(0);

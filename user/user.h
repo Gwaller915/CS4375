@@ -1,11 +1,13 @@
 struct stat;
 struct rtcdate;
 struct pstat;
+struct rusage;  //added task 3.1a
 
 // system calls
 int fork(void);
 int exit(int) __attribute__((noreturn));
 int wait(int*);
+int wait2(int*, struct rusage*);  // added 3.2
 int pipe(int*);
 int write(int, const void*, int);
 int read(int, void*, int);
