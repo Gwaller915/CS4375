@@ -55,14 +55,7 @@ sys_wait2(void)         //task 3.5
     return -1;
   
   return wait2(p1,p2);
-  // uint64 pid_rusage = wait2(p1,p2);
-  // if(p2 !=0){
-  //   uint64 pid_rusage = wait2(p1,p2);
-  //   return pid_rusage;
-  // }
   
-  //uint64 pid_rusage = wait2(p,p2);
-  //return pid_rusage;       //how do I return rusuage
   
 }
 

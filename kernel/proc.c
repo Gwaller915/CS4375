@@ -434,7 +434,7 @@ wait(uint64 addr)
  int
  wait2(uint64 addr1, uint64 addr2)
  {
-  struct rusage;
+  struct rusage rusage;
      // assign cputime from child, copyout function, return pid
   struct proc *np;
   int havekids, pid;
@@ -460,8 +460,10 @@ wait(uint64 addr)
             release(&wait_lock); 
             return -1;
           }
-          if(addr2 != 0 && copyout(p->pagetable, addr2, (char *)&np->xstate,
-                                  sizeof(np->xstate)) < 0) {
+          //
+          rusage.cputime = np->cputime;
+          if(addr2 != 0 && copyout(p->pagetable, addr2, (char *)&rusage,
+                                  sizeof(rusage)) < 0) {
             release(&np->lock);
             release(&wait_lock); 
             return -1;

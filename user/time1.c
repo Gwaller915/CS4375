@@ -5,7 +5,6 @@
 
 int main(int argc, char *argv[]){ // puts in arguments
     
-    //struct rusage rusage;
 
     if (argc < 2){
         printf("Arguments < 2");
