@@ -6,7 +6,9 @@
 #include "proc.h"
 #include "pstat.h"
 #include "defs.h"
+//#include "user/user.h" //add to use uptime
 //#include "pstat.h" added
+
 
 struct cpu cpus[NCPU];
 
@@ -121,7 +123,8 @@ allocproc(void)
 found:
   p->pid = allocpid();
   p->state = USED;
-  p->cputime = 0;                               // user added cputime
+  p->cputime = 0;    
+  p->priority =0;                           // user added cputime
   // Allocate a trapframe page.
   if((p->trapframe = (struct trapframe *)kalloc()) == 0){
     freeproc(p);
@@ -243,8 +246,9 @@ userinit(void)
 
   safestrcpy(p->name, "initcode", sizeof(p->name));
   p->cwd = namei("/");
-
   p->state = RUNNABLE;
+
+  //p->priority = uptime();
 
   release(&p->lock);
 }
@@ -490,9 +494,6 @@ wait(uint64 addr)
   }
 }
  
-
-
-
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
 // Scheduler never returns.  It loops, doing:
@@ -500,16 +501,27 @@ wait(uint64 addr)
 //  - swtch to start running that process.
 //  - eventually that process transfers control
 //    via swtch back to the scheduler.
+
+
+int min(int a, int b) {
+    return (a < b) ? a : b;
+}
+
+
 void
 scheduler(void)
 {
   struct proc *p;
   struct cpu *c = mycpu();
-  
+  struct proc *highestPriorityPointer = 0; // hw3 t2, Initialize at lowest priority
+  int highestPriorityValue = -1;
   c->proc = 0;
+
   for(;;){
     // Avoid deadlock by ensuring that devices can interrupt.
     intr_on();
+    highestPriorityPointer = 0; //hw3 t2
+    highestPriorityValue = -1;
 
     for(p = proc; p < &proc[NPROC]; p++) {
       acquire(&p->lock);
@@ -517,6 +529,19 @@ scheduler(void)
         // Switch to chosen process.  It is the process's job
         // to release its lock and then reacquire it
         // before jumping back to us.
+
+        //aging policy for priority, hw 4 task 4
+        int effective_priority = min(MAXEFFPRIORITY, p->priority  + (p->cputime - p->readytime));
+  
+
+        //Hw3 task 2.  Added to swith process when state changes to runnable and priority is higher in selected process
+        
+          if(highestPriorityPointer == 0 || effective_priority > highestPriorityValue){
+            highestPriorityPointer = p;
+            highestPriorityValue = effective_priority;
+          }
+        if(highestPriorityPointer !=0){
+       
         p->state = RUNNING;
         c->proc = p;
         swtch(&c->context, &p->context);
@@ -524,6 +549,9 @@ scheduler(void)
         // Process is done running for now.
         // It should have changed its p->state before coming back.
         c->proc = 0;
+       // release(&p->lock);
+
+        }
       }
       release(&p->lock);
     }
@@ -632,6 +660,9 @@ wakeup(void *chan)
       acquire(&p->lock);
       if(p->state == SLEEPING && p->chan == chan) {
         p->state = RUNNABLE;
+        //int ticks = uptime();   //hw3t2
+        p->readytime = 0 ;   //hw3 t2
+
       }
       release(&p->lock);
     }
@@ -737,6 +768,9 @@ procinfo(uint64 addr)
     procinfo.pid = p->pid;
     procinfo.state = p->state;
     procinfo.size = p->sz;
+    procinfo.priority = p->priority;
+    procinfo.cputime = p->cputime;
+    
     if (p->parent)
       procinfo.ppid = (p->parent)->pid;
     else

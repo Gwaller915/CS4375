@@ -84,6 +84,7 @@ struct trapframe {
 struct proc {
 
   uint cputime; //user created cputime 
+  int readytime; //hw3 t2
   
   struct spinlock lock;
   // p->lock must be held when using these:
@@ -92,7 +93,8 @@ struct proc {
   int killed;                  // If non-zero, have been killed
   int xstate;                  // Exit status to be returned to parent's wait
   int pid;                     // Process ID
-
+  int priority;			//Task 1 hw3
+  
   // wait_lock must be held when using this:
   struct proc *parent;         // Parent process
 

@@ -17,6 +17,37 @@ sys_exit(void)
   return 0;  // not reached
 }
 
+uint64 sys_getpriority(void){    //task1 hw3
+  return myproc()->priority;
+}
+
+/*
+uint64 sys_setpriority(int priority){    //task1 hw3
+  struct proc *currentproc = myproc();
+
+  if (priority < 0 || priority > 49){
+    return -1;
+  }
+
+  currentproc->priority = priority;
+
+  return 0;
+}
+*/
+
+
+//try to run like wait2()
+uint64 sys_setpriority(void){    //task1 hw3
+  //struct proc *currentproc = myproc();
+
+  int p;
+  if(argint(0, &p) < 0)
+    return -1;
+  myproc()->priority = p;  
+  return 0;
+}
+
+
 uint64
 sys_getpid(void)
 {
@@ -55,8 +86,6 @@ sys_wait2(void)         //task 3.5
     return -1;
   
   return wait2(p1,p2);
-  
-  
 }
 
 

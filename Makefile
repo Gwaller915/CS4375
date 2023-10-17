@@ -62,6 +62,10 @@ CFLAGS += -mcmodel=medany
 CFLAGS += -ffreestanding -fno-common -nostdlib -mno-relax
 CFLAGS += -I.
 CFLAGS += $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
+# Default scheduling policy (round-robin)
+#CFLAGS += -DRRSCHED
+
+
 
 # Disable PIE when possible (for Ubuntu 16.10 toolchain)
 ifneq ($(shell $(CC) -dumpspecs 2>/dev/null | grep -e '[^f]no-pie'),)
@@ -140,6 +144,12 @@ UPROGS=\
 	$U/_time1\
 	$U/_uptime\
 	$U/_matmul\
+	$U/_testpriority\
+	$U/_pexec\
+	  #hw3 task1
+	#$U/_getpriority\
+	#$U/_setpriority\
+	
 	
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)
