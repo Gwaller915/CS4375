@@ -39,18 +39,22 @@ main(int argc, char **argv)
 
 
 //hw3 t2 uptime and uproc.ready added to 
-  printf("pid\tstate\t\tsize\tppid\tname\tpriority\treadytime\tage\n"); //added hw3 t1
+  printf("pid\tstate\t\tsize\tppid\tname\tpriority\tcputime\tage\n"); //added hw3 t1
   
   //printf("pid\tstate\t\tsize\tpriority\tcputime\tppid\tname\n\tpriority\treadytime"); //added hw3 t1
   
   for (i=0; i<nprocs; i++) {
     state = states[uproc[i].state];
-    int effective_priority = min(MAXEFFPRIORITY, uproc[i].priority + (ticks - uproc[i].readytime));
+    //int effective_priority = min(MAXEFFPRIORITY, uproc[i].priority + (ticks - uproc[i].readytime));
+    if (uproc[i].state  == RUNNABLE){
+      printf("%d\t%s\t%l\t%d\t%s\t%d\t\t%d\t\t%d\n", uproc[i].pid, state,
+                   uproc[i].size, uproc[i].ppid, uproc[i].name, uproc[i].priority,uproc[i].cputime, uptime - uproc[i].readytime);  
+    }else{
 
-    printf("%d\t%s\t%l\t%d\t%s\t%d\t\t%d\t\t%d\n", uproc[i].pid, state,
-                   uproc[i].size, uproc[i].ppid, uproc[i].name, uproc[i].priority,ticks - uproc[i].readytime, effective_priority);
- //                  uproc[i].size, uproc[i].priority, uproc[i].cputime, uproc[i].ppid, uproc[i].name);
- 
+      printf("%d\t%s\t%l\t%d\t%s\t%d\t\t%d\t\t%d\n", uproc[i].pid, state,
+                   uproc[i].size, uproc[i].ppid, uproc[i].name, uproc[i].priority,uproc[i].cputime, 0);
+ //              uproc[i].size, uproc[i].priority, uproc[i].cputime, uproc[i].ppid, uproc[i].name);
+    }
  
   }
 

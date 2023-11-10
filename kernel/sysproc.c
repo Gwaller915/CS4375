@@ -21,19 +21,6 @@ uint64 sys_getpriority(void){    //task1 hw3
   return myproc()->priority;
 }
 
-/*
-uint64 sys_setpriority(int priority){    //task1 hw3
-  struct proc *currentproc = myproc();
-
-  if (priority < 0 || priority > 49){
-    return -1;
-  }
-
-  currentproc->priority = priority;
-
-  return 0;
-}
-*/
 
 
 //try to run like wait2()
@@ -43,8 +30,8 @@ uint64 sys_setpriority(void){    //task1 hw3
   int p;
   if(argint(0, &p) < 0)
     return -1;
-  myproc()->priority = p;  
-  return 0;
+  return myproc()->priority = p;  
+  //return 0;
 }
 
 
@@ -157,4 +144,6 @@ sys_getprocs(void)
   if (argaddr(0, &addr) < 0)
     return -1;
   return(procinfo(addr));
+
+  
 }

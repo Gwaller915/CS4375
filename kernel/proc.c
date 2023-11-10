@@ -1,5 +1,5 @@
 #include "types.h"
-#include "param.h"
+#include "kernel/param.h"
 #include "memlayout.h"
 #include "riscv.h"
 #include "spinlock.h"
@@ -247,6 +247,12 @@ userinit(void)
   safestrcpy(p->name, "initcode", sizeof(p->name));
   p->cwd = namei("/");
   p->state = RUNNABLE;
+  
+  if (p->state == RUNNABLE) {
+    
+    p->readytime = p->cputime;
+}
+
 
   //p->priority = uptime();
 
@@ -319,6 +325,11 @@ fork(void)
 
   acquire(&np->lock);
   np->state = RUNNABLE;
+   if (p->state == RUNNABLE) {
+    
+    p->readytime = p->cputime;
+}
+
   release(&np->lock);
 
   return pid;
@@ -448,7 +459,7 @@ wait(uint64 addr)
 
   for(;;){
     // Scan through table looking for exited children.
-    havekids = 0;
+    havekids = 0; 
     for(np = proc; np < &proc[NPROC]; np++){
       if(np->parent == p){
         // make sure the child isn't still in exit() or swtch().
@@ -514,14 +525,14 @@ scheduler(void)
   struct proc *p;
   struct cpu *c = mycpu();
   struct proc *highestPriorityPointer = 0; // hw3 t2, Initialize at lowest priority
-  int highestPriorityValue = -1;
+  //int highestPriorityValue = -1;
   c->proc = 0;
 
   for(;;){
     // Avoid deadlock by ensuring that devices can interrupt.
     intr_on();
     highestPriorityPointer = 0; //hw3 t2
-    highestPriorityValue = -1;
+    //highestPriorityValue = -1;
 
     for(p = proc; p < &proc[NPROC]; p++) {
       acquire(&p->lock);
@@ -529,17 +540,23 @@ scheduler(void)
         // Switch to chosen process.  It is the process's job
         // to release its lock and then reacquire it
         // before jumping back to us.
+        
+        p->readytime = p->cputime;
+
+       
 
         //aging policy for priority, hw 4 task 4
         int effective_priority = min(MAXEFFPRIORITY, p->priority  + (p->cputime - p->readytime));
-  
+        p->effectPriority =effective_priority;
 
         //Hw3 task 2.  Added to swith process when state changes to runnable and priority is higher in selected process
         
-          if(highestPriorityPointer == 0 || effective_priority > highestPriorityValue){
+          if(highestPriorityPointer == 0 || effective_priority > highestPriorityPointer->effectPriority){
             highestPriorityPointer = p;
-            highestPriorityValue = effective_priority;
+            //highestPriorityValue = effective_priority;
           }
+        //release(&p->lock);
+
         if(highestPriorityPointer !=0){
        
         p->state = RUNNING;
@@ -592,6 +609,11 @@ yield(void)
   struct proc *p = myproc();
   acquire(&p->lock);
   p->state = RUNNABLE;
+   if (p->state == RUNNABLE) {
+    
+    p->readytime = p->cputime;
+}
+
   sched();
   release(&p->lock);
 }
@@ -661,7 +683,11 @@ wakeup(void *chan)
       if(p->state == SLEEPING && p->chan == chan) {
         p->state = RUNNABLE;
         //int ticks = uptime();   //hw3t2
-        p->readytime = 0 ;   //hw3 t2
+         if (p->state == RUNNABLE) {
+    
+            p->readytime = p->cputime;
+          }
+
 
       }
       release(&p->lock);
@@ -684,6 +710,11 @@ kill(int pid)
       if(p->state == SLEEPING){
         // Wake process from sleep().
         p->state = RUNNABLE;
+         if (p->state == RUNNABLE) {
+    
+              p->readytime = p->cputime;
+          }
+
       }
       release(&p->lock);
       return 0;

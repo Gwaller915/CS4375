@@ -75,7 +75,9 @@ usertrap(void)
 
   //user added increments cput time if interrupt happens
   if(p){
-    p->cputime++;              
+    if (r_scause() == 9){
+      p->cputime++;
+    }              
   }
 
   if(p->killed)
