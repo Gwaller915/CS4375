@@ -814,3 +814,4 @@ procinfo(uint64 addr)
   }
   return nprocs;
 }
+

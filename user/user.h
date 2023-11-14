@@ -29,6 +29,9 @@ int uptime(void);
 int getprocs(struct pstat*);
 int getpriority(void); //hw3 task1
 int setpriority(int); //hw3 task1
+int prioritystate(void); //hw3 t3
+int changepriority(int pid, int priority); //hw3 t3
+uint64 freepmem(void); //hw4.2
 
 // ulib.c
 int stat(const char*, struct stat*);

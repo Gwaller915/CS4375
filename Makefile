@@ -146,6 +146,9 @@ UPROGS=\
 	$U/_matmul\
 	$U/_testpriority\
 	$U/_pexec\
+	$U/_free\
+	$U/_memory-user\
+	 #hw 4.1
 	
 	  #hw3 task1
 	#$U/_getpriority\

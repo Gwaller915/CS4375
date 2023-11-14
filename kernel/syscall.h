@@ -24,4 +24,7 @@
 #define SYS_wait2  23   //task 3.4a hw2
 #define SYS_getpriority 24 //task 1.1 hw3
 #define SYS_setpriority 25 //task 1.2 hw3
+#define SYS_prioritystate	26
+#define SYS_changepriority 27
+#define SYS_freepmem 28 //task 4.1
 

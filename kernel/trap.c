@@ -5,6 +5,7 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "defs.h"
+#include <stddef.h>
 
 struct spinlock tickslock;
 uint ticks;
@@ -37,6 +38,7 @@ void
 usertrap(void)
 {
   int which_dev = 0;
+  uint64 faulting_address; //task 4.3
 
   if((r_sstatus() & SSTATUS_SPP) != 0)
     panic("usertrap: not from user mode");
@@ -71,8 +73,42 @@ usertrap(void)
     printf("usertrap(): unexpected scause %p pid=%d\n", r_scause(), p->pid);
     printf("            sepc=%p stval=%p\n", r_sepc(), r_stval());
     p->killed = 1;
-  }
 
+    //Task 4.3 block til end curly brace
+    if(r_scause() == 13 || r_scause() == 15){  //Check to see if fault is load or store
+      faulting_address = r_stval(); 
+
+      //
+      printf("User trap error.\n");
+      printf("p size: %d\n", p->sz);
+      printf("Faulting address: %d\n", faulting_address);
+      //Psuedo code from class.  Call to kalloc if faulting address is less than sz
+      if(faulting_address > p->sz){
+        char *memory = kalloc();
+        kalloc();
+        printf("Faulting address is greater than p size.\n");
+
+        //check on kalloc
+        if(memory == NULL){
+          printf("Kalloc failed\n");
+          p->killed = 1;
+        }
+      //clears contents of allocated page  
+        memset(memory, 0, PGSIZE);   
+        int pg_round_down = PGROUNDDOWN(faulting_address);
+      //Put physical address and virtual together  
+        if(mappages(p->pagetable, pg_round_down, PGSIZE, (uint64)memory, PTE_W | PTE_X | PTE_R) == 0 ){
+          printf("Page mapped.\n");
+           printf("p size after: %d\n", p->sz);
+          printf("Faulting address after rounding: %d\n", pg_round_down);
+          return;
+        }else{
+          printf("Page map failed.");
+          p->killed = 1;
+      }
+    }
+  }
+}
   //user added increments cput time if interrupt happens
   if(p){
     if (r_scause() == 9){

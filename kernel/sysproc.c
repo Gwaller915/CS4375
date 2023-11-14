@@ -7,6 +7,7 @@
 #include "spinlock.h"
 #include "proc.h"  //added task 3.4
 #include "pstat.h" //added task 3.4
+
 uint64
 sys_exit(void)
 {
@@ -30,8 +31,8 @@ uint64 sys_setpriority(void){    //task1 hw3
   int p;
   if(argint(0, &p) < 0)
     return -1;
-  return myproc()->priority = p;  
-  //return 0;
+  myproc()->priority = p;  
+  return 0;
 }
 
 
@@ -79,15 +80,18 @@ sys_wait2(void)         //task 3.5
 uint64
 sys_sbrk(void)
 {
-  int addr;
+  //int addr;
   int n;
 
   if(argint(0, &n) < 0)
     return -1;
-  addr = myproc()->sz;
-  if(growproc(n) < 0)
-    return -1;
-  return addr;
+  int oldSz = myproc()->sz;
+  //int newSz =  oldSz + n;  //4.2
+  
+
+  //  if(growproc(n) < 0)  //4.2
+  //    return -1;
+  return oldSz;  //returns old s
 }
 
 uint64
@@ -144,6 +148,13 @@ sys_getprocs(void)
   if (argaddr(0, &addr) < 0)
     return -1;
   return(procinfo(addr));
-
   
+}
+
+//hw 4.1
+int sys_freepmem(void) {
+    //uint64 p;
+    //test code
+    //return 808;
+    return freepmem();
 }

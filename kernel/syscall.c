@@ -83,6 +83,7 @@ argstr(int n, char *buf, int max)
   return fetchstr(addr, buf, max);
 }
 
+
 extern uint64 sys_chdir(void);
 extern uint64 sys_close(void);
 extern uint64 sys_dup(void);
@@ -108,6 +109,7 @@ extern uint64 sys_uptime(void);
 extern uint64 sys_getprocs(void);
 extern uint64 sys_getpriority(void);  //hw3 t1
 extern uint64 sys_setpriority(void);   //hw3 t1
+extern uint64 sys_freepmem(void);  //4.1
 
 static uint64 (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -135,6 +137,8 @@ static uint64 (*syscalls[])(void) = {
 [SYS_getprocs]   sys_getprocs,
 [SYS_getpriority] sys_getpriority,  //hw3 task1
 [SYS_setpriority] sys_setpriority,  //hw3 task1
+[SYS_freepmem] sys_freepmem,
+//[SYS_freepmem] sys_freepmem, //4.1
 };
 
 void
