@@ -13,6 +13,8 @@ struct cpu cpus[NCPU];
 struct proc proc[NPROC];
 
 struct proc *initproc;
+struct mmr_list mmr_list[NPROC*MAX_MMR];
+struct spinlock listid_lock;
 
 int nextpid = 1;
 struct spinlock pid_lock;
@@ -31,6 +33,57 @@ struct spinlock wait_lock;
 // Allocate a page for each process's kernel stack.
 // Map it high in memory, followed by an invalid
 // guard page.
+
+// Initialize mmr_list
+
+void
+mmrlistinit(void){
+  struct mmr_list *pmmrlist;
+  initlock(&listid_lock,"listid");
+  for (pmmrlist = mmr_list; pmmrlist < &mmr_list[NPROC*MAX_MMR]; pmmrlist++) {
+  initlock(&pmmrlist->lock, "mmrlist");
+  pmmrlist->valid = 0;
+ }
+}
+
+// find the mmr_list for a given listid
+struct mmr_list*
+get_mmr_list(int listid) {
+  acquire(&listid_lock);
+  if (listid >=0 && listid < NPROC*MAX_MMR && mmr_list[listid].valid) {
+    release(&listid_lock);
+    return(&mmr_list[listid]);
+  }
+  else {
+    release(&listid_lock);
+    return 0;
+  }
+}
+
+// free up entry in mmr_list array
+void
+dealloc_mmr_listid(int listid) {
+  acquire(&listid_lock);
+  mmr_list[listid].valid = 0;
+  release(&listid_lock);
+}
+
+// find an unused entry in the mmr_list array
+int
+alloc_mmr_listid() {
+  acquire(&listid_lock);
+  int listid = -1;
+  for (int i = 0; i < NPROC*MAX_MMR; i++) {
+    if (mmr_list[i].valid == 0) {
+      mmr_list[i].valid = 1;
+      listid = i;
+      break;
+    }
+  }
+  release(&listid_lock);
+  return(listid);
+}
+
 void
 proc_mapstacks(pagetable_t kpgtbl) {
   struct proc *p;
@@ -245,6 +298,7 @@ userinit(void)
   p->cwd = namei("/");
 
   p->state = RUNNABLE;
+  p->cur_max = MAXVA - 2 * PGSIZE;
 
   release(&p->lock);
 }
@@ -304,6 +358,9 @@ fork(void)
   np->cwd = idup(p->cwd);
 
   safestrcpy(np->name, p->name, sizeof(p->name));
+
+  // Propagate cur_max to the child process
+  np->cur_max = p->cur_max;
 
   pid = np->pid;
 
