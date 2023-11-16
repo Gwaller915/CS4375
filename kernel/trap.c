@@ -80,13 +80,13 @@ usertrap(void)
 
       //
       printf("User trap error.\n");
-      printf("p size: %d\n", p->sz);
-      printf("Faulting address: %d\n", faulting_address);
+      printf("p size: %p\n", p->sz);
+      printf("Faulting address: %p\n", faulting_address);
       //Psuedo code from class.  Call to kalloc if faulting address is less than sz
-      if(faulting_address > p->sz){
+      if(faulting_address < p->sz){
         char *memory = kalloc();
         kalloc();
-        printf("Faulting address is greater than p size.\n");
+        printf("Faulting address is less than p size.\n");
 
         //check on kalloc
         if(memory == NULL){
@@ -99,9 +99,9 @@ usertrap(void)
       //Put physical address and virtual together  
         if(mappages(p->pagetable, pg_round_down, PGSIZE, (uint64)memory, PTE_W | PTE_X | PTE_R) == 0 ){
           printf("Page mapped.\n");
-           printf("p size after: %d\n", p->sz);
-          printf("Faulting address after rounding: %d\n", pg_round_down);
-          return;
+           printf("p size after: %p\n", p->sz);
+          printf("Faulting address after rounding: %p\n", pg_round_down);
+   
         }else{
           printf("Page map failed.");
           p->killed = 1;

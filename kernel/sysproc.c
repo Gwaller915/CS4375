@@ -24,7 +24,7 @@ uint64 sys_getpriority(void){    //task1 hw3
 
 
 
-//try to run like wait2()
+//try to run like wait2()f
 uint64 sys_setpriority(void){    //task1 hw3
   //struct proc *currentproc = myproc();
 
@@ -86,7 +86,7 @@ sys_sbrk(void)
   if(argint(0, &n) < 0)
     return -1;
   int oldSz = myproc()->sz;
-  //int newSz =  oldSz + n;  //4.2
+  myproc()->sz += n;  //4.2
   
 
   //  if(growproc(n) < 0)  //4.2
