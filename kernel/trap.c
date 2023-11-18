@@ -85,7 +85,7 @@ usertrap(void)
       //Psuedo code from class.  Call to kalloc if faulting address is less than sz
       if(faulting_address < p->sz){
         char *memory = kalloc();
-        kalloc();
+        //kalloc();
         printf("Faulting address is less than p size.\n");
 
         //check on kalloc
@@ -101,7 +101,7 @@ usertrap(void)
           printf("Page mapped.\n");
            printf("p size after: %p\n", p->sz);
           printf("Faulting address after rounding: %p\n", pg_round_down);
-   
+   		return;
         }else{
           printf("Page map failed.");
           p->killed = 1;
