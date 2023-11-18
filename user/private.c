@@ -1,9 +1,12 @@
 #include "kernel/types.h"
 #include "user/user.h"
 #include "kernel/stat.h"
+//#include "kernel/syscall.h"
+//#include "kernel/sysfile.c"
 
 #define BSIZE 10
 #define MAX 10
+#define NULL 0
 
 typedef struct {
     int buf[BSIZE];
@@ -37,7 +40,7 @@ void consumer()
 	buffer->num_consumed++;
     }
 }
-
+/*
 int
 main(int argc, char *argv[])
 {
@@ -60,3 +63,5 @@ main(int argc, char *argv[])
 
     exit(0);
 }
+*/
+

@@ -1,3 +1,4 @@
+
 struct stat;
 struct rtcdate;
 struct pstat;
@@ -27,6 +28,10 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int getprocs(struct pstat*);
+int munmap(int buffer_t, uint64 length);
+int mmap(void *addr, int length, int prot, int flags, int fd, int offset);
+uint64 freepmem(void); //hw4.2
+
 
 // ulib.c
 int stat(const char*, struct stat*);

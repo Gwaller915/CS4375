@@ -12,5 +12,9 @@
 #define FSSIZE       1000  // size of file system in blocks
 #define MAXPATH      128   // maximum file path name
 #define MAX_MMR 10 // maximum number of memory-mapped regions per process
+#define RRSCHED   0
+#define MAXEFFPRIORITY 99
+#define PRSCHED 1
+#define SCHEDPOLICY SCHEDPRIORITY
 
 enum procstate { UNUSED, USED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };

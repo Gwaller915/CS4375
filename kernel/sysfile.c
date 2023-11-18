@@ -15,6 +15,8 @@
 #include "sleeplock.h"
 #include "file.h"
 #include "fcntl.h"
+#include <stddef.h>
+//#include <unistd.h>
 
 // Fetch the nth word-sized system call argument as a file descriptor
 // and return both the descriptor and the corresponding struct file.
@@ -454,6 +456,7 @@ sys_exec(void)
   return -1;
 }
 
+//int mmap(void *addr, size_t length, int prot, int flags, int fd, int offset);
 // Create a new mapped memory region
 uint64
 sys_mmap(){

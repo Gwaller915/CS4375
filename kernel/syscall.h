@@ -22,3 +22,8 @@
 #define SYS_close  21
 #define SYS_getprocs  22
 #define SYS_wait2  23   //task 3.4a
+#define SYS_mmap 24
+#define SYS_munmap 25
+#define SYS_prioritystate	26
+#define SYS_changepriority 27
+#define SYS_freepmem 28 //task 4.

@@ -141,6 +141,8 @@ UPROGS=\
 	$U/_uptime\
 	$U/_matmul\
 	$U/_private\
+	$U/_free\
+	$U/_memory-user\
 	
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)

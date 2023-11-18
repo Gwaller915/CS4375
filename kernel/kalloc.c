@@ -80,3 +80,22 @@ kalloc(void)
     memset((char*)r, 5, PGSIZE); // fill with junk
   return (void*)r;
 }
+
+//4.1
+uint64 calculate_free_memory(void) {
+    uint64 total_free_memory = 0;
+    struct run *r;
+
+    // Traverse the linked list of free memory blocks. Task 4.1
+    for (r = kmem.freelist; r != 0; r = r->next) {
+        //size of the free memory block
+        total_free_memory += PGSIZE;
+    }
+
+    return total_free_memory;
+}
+//4.1
+uint64 freepmem(void) {    //task 
+    return calculate_free_memory();
+}
+
