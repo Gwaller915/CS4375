@@ -40,7 +40,7 @@ void consumer()
 	buffer->num_consumed++;
     }
 }
-/*
+
 int
 main(int argc, char *argv[])
 {
@@ -63,5 +63,5 @@ main(int argc, char *argv[])
 
     exit(0);
 }
-*/
+
 

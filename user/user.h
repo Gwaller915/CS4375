@@ -28,8 +28,8 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int getprocs(struct pstat*);
-int munmap(int buffer_t, uint64 length);
-int mmap(void *addr, int length, int prot, int flags, int fd, int offset);
+uint64 munmap(void *addr, uint64 length); // hw 5.1
+uint64 mmap(void *addr, int length, int prot, int flags, int fd, int offset); //hw 5.1
 uint64 freepmem(void); //hw4.2
 
 
