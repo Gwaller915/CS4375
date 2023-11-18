@@ -74,9 +74,16 @@ usertrap(void)
     printf("            sepc=%p stval=%p\n", r_sepc(), r_stval());
     p->killed = 1;
 
+    
     //Task 4.3 block til end curly brace
     if(r_scause() == 13 || r_scause() == 15){  //Check to see if fault is load or store
       faulting_address = r_stval(); 
+
+	//hw4
+	if (faulting_address >= p->sz){
+	  p->killed = 1;
+	  //goto end;
+	}
 
       //
       printf("User trap error.\n");
@@ -84,7 +91,11 @@ usertrap(void)
       printf("Faulting address: %p\n", faulting_address);
       //Psuedo code from class.  Call to kalloc if faulting address is less than sz
       if(faulting_address < p->sz){
+        
         char *memory = kalloc();
+        int pg_round_down = PGROUNDDOWN(faulting_address);
+        memset(memory, 0, PGSIZE);
+        
         //kalloc();
         printf("Faulting address is less than p size.\n");
 
@@ -94,17 +105,20 @@ usertrap(void)
           p->killed = 1;
         }
       //clears contents of allocated page  
-        memset(memory, 0, PGSIZE);   
-        int pg_round_down = PGROUNDDOWN(faulting_address);
+           
+        
       //Put physical address and virtual together  
-        if(mappages(p->pagetable, pg_round_down, PGSIZE, (uint64)memory, PTE_W | PTE_X | PTE_R) == 0 ){
-          printf("Page mapped.\n");
+        if(mappages(p->pagetable, pg_round_down, PGSIZE, (uint64)memory, PTE_W | PTE_X |PTE_R |PTE_U)      
+          != 0 ){
+          printf("Page not mapped.\n");
            printf("p size after: %p\n", p->sz);
           printf("Faulting address after rounding: %p\n", pg_round_down);
-   		return;
-        }else{
-          printf("Page map failed.");
+          kfree(memory);
           p->killed = 1;
+   		//return;
+        }else{
+          printf("Page mapped.\n");
+          //p->killed = 1;
       }
     }
   }
