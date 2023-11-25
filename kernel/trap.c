@@ -47,7 +47,6 @@ usertrap(void)
   // send interrupts and exceptions to kerneltrap(),
   // since we're now in the kernel.
   w_stvec((uint64)kernelvec);
-
   struct proc *p = myproc();
   
   // save user program counter.
@@ -66,48 +65,66 @@ usertrap(void)
     // an interrupt will change sstatus &c registers,
     // so don't enable until done with those registers.
     intr_on();
-
     syscall();
-  } else if((which_dev = devintr()) != 0){
-    // ok
-  } else {
-    printf("usertrap(): unexpected scause %p pid=%d\n", r_scause(), p->pid);
-    printf("            sepc=%p stval=%p\n", r_sepc(), r_stval());
-    p->killed = 1;
-
-    //Task 4.3 block til end curly brace
-    if(r_scause() == 13 || r_scause() == 15){  //Check to see if fault is load or store
+  }else if((which_dev = devintr()) != 0){
+ 
+  //hw5.1b
+   printf("which_dev = devintr()) != 0)"); 
+  
+  //Task 4.3 block til end curly brace
+  }else if(r_scause() == 13 || r_scause() == 15){  //Check to see if fault is load or store
       faulting_address = r_stval(); 
 
-      //
       printf("User trap error.\n");
       printf("p size: %p\n", p->sz);
       printf("Faulting address: %p\n", faulting_address);
+      
+      acquire(&p->lock); //hw5.1b
+      
       //Psuedo code from class.  Call to kalloc if faulting address is less than sz
       if(faulting_address < p->sz){
         char *memory = kalloc();
-        kalloc();
+        //kalloc();
         printf("Faulting address is less than p size.\n");
 
         //check on kalloc
-        if(memory == NULL){
+        if(memory == 0){
           printf("Kalloc failed\n");
           p->killed = 1;
+          release(&p->lock);
+          //goto end;
         }
+      
       //clears contents of allocated page  
         memset(memory, 0, PGSIZE);   
         int pg_round_down = PGROUNDDOWN(faulting_address);
+      
       //Put physical address and virtual together  
-        if(mappages(p->pagetable, pg_round_down, PGSIZE, (uint64)memory, PTE_W | PTE_X | PTE_R) == 0 ){
-          printf("Page mapped.\n");
-           printf("p size after: %p\n", p->sz);
+        if(mappages(p->pagetable, pg_round_down, PGSIZE, (uint64)memory, PTE_W | PTE_X | PTE_R) < 0 ){
+          printf("Page not  mapped.\n");
+          printf("p size after: %p\n", p->sz);
           printf("Faulting address after rounding: %p\n", pg_round_down);
-   
-        }else{
-          printf("Page map failed.");
+          kfree(memory);
           p->killed = 1;
-      }
+          release(&p->lock);
+   	  goto end;
+        }else{
+          printf("Page mapped.");
+        }
     }
+    release(&p->lock);
+  }else {
+    printf("usertrap(): unexpected scause %p pid=%d\n", r_scause(), p->pid);
+    printf("            sepc=%p stval=%p\n", r_sepc(), r_stval());
+    p->killed = 1;
+  
+  if (r_scause() == 2) {
+    
+    printf("Illegal instruction exception occurred at sepc=%p\n", r_sepc());
+    //printf("Faulting address: %p\n", faulting_address);
+    p->killed = 1;
+    //release(&p->lock);
+    //goto end;
   }
 }
   //user added increments cput time if interrupt happens
@@ -121,10 +138,15 @@ usertrap(void)
     exit(-1);
 
   // give up the CPU if this is a timer interrupt.
-  if(which_dev == 2)
+  if(which_dev == 2){
+    //printf("Timer interrupt");
     yield();
-
+  }
+  
   usertrapret();
+  end:
+     printf("Reached end in usertrap\n");
+     //release(&p->lock);
 }
 
 
