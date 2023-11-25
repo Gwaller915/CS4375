@@ -69,7 +69,7 @@ usertrap(void)
   }else if((which_dev = devintr()) != 0){
  
   //hw5.1b
-   printf("which_dev = devintr()) != 0)"); 
+  //Everything is ok
   
   //Task 4.3 block til end curly brace
   }else if(r_scause() == 13 || r_scause() == 15){  //Check to see if fault is load or store
