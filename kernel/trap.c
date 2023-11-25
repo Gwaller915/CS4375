@@ -54,7 +54,6 @@ usertrap(void)
   
   if(r_scause() == 8){
     // system call
-
     if(p->killed)
       exit(-1);
 
@@ -69,14 +68,7 @@ usertrap(void)
     syscall();
   } else if((which_dev = devintr()) != 0){
     // ok
-  } else {
-    printf("usertrap(): unexpected scause %p pid=%d\n", r_scause(), p->pid);
-    printf("            sepc=%p stval=%p\n", r_sepc(), r_stval());
-    p->killed = 1;
-
-    
-    //Task 4.3 block til end curly brace
-    if(r_scause() == 13 || r_scause() == 15){  //Check to see if fault is load or store
+  } else if(r_scause() == 13 || r_scause() == 15){  //Check to see if fault is load or store
       faulting_address = r_stval(); 
 
 	//hw4
@@ -86,9 +78,9 @@ usertrap(void)
 	}
 
       //
-      printf("User trap error.\n");
+      //printf("User trap error.\n");
       printf("p size: %p\n", p->sz);
-      printf("Faulting address: %p\n", faulting_address);
+      printf("In trap.c Faulting address: %p\n", faulting_address);
       //Psuedo code from class.  Call to kalloc if faulting address is less than sz
       if(faulting_address < p->sz){
         
@@ -97,7 +89,7 @@ usertrap(void)
         memset(memory, 0, PGSIZE);
         
         //kalloc();
-        printf("Faulting address is less than p size.\n");
+        //printf("Faulting address is less than p size.\n");
 
         //check on kalloc
         if(memory == NULL){
@@ -118,11 +110,13 @@ usertrap(void)
    		//return;
         }else{
           printf("Page mapped.\n");
+          printf("p size after: %p\n", p->sz);
+          printf("Faulting address after rounding: %p\n", pg_round_down);
           //p->killed = 1;
       }
     }
   }
-}
+
   //user added increments cput time if interrupt happens
   if(p){
     if (r_scause() == 9){
