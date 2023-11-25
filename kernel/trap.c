@@ -74,7 +74,7 @@ usertrap(void)
 	//hw4
 	if (faulting_address >= p->sz){
 	  p->killed = 1;
-	  //goto end;
+	
 	}
 
       //
