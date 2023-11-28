@@ -10,6 +10,10 @@
 //#include "pstat.h" added
 
 
+struct mmr_list mmr_list[NPROC*MAX_MMR];
+
+struct spinlock listid_lock;
+
 struct cpu cpus[NCPU];
 
 struct proc proc[NPROC];
@@ -29,6 +33,60 @@ extern char trampoline[]; // trampoline.S
 // memory model when using p->parent.
 // must be acquired before any p->lock.
 struct spinlock wait_lock;
+
+//Hw5.1
+// Initialize mmr_list
+
+void
+mmrlistinit(void){
+  struct mmr_list *pmmrlist;
+  initlock(&listid_lock,"listid");
+  for (pmmrlist = mmr_list; pmmrlist < &mmr_list[NPROC*MAX_MMR]; pmmrlist++) {
+  initlock(&pmmrlist->lock, "mmrlist");
+  pmmrlist->valid = 0;
+ }
+}
+
+// find the mmr_list for a given listid
+struct mmr_list*
+get_mmr_list(int listid) {
+  acquire(&listid_lock);
+  if (listid >=0 && listid < NPROC*MAX_MMR && mmr_list[listid].valid) {
+    release(&listid_lock);
+    return(&mmr_list[listid]);
+  }
+  else {
+    release(&listid_lock);
+    return 0;
+  }
+}
+
+// free up entry in mmr_list array
+void
+dealloc_mmr_listid(int listid) {
+  acquire(&listid_lock);
+  mmr_list[listid].valid = 0;
+  release(&listid_lock);
+}
+
+// find an unused entry in the mmr_list array
+int
+alloc_mmr_listid() {
+  acquire(&listid_lock);
+  int listid = -1;
+  for (int i = 0; i < NPROC*MAX_MMR; i++) {
+    if (mmr_list[i].valid == 0) {
+      mmr_list[i].valid = 1;
+      listid = i;
+      break;
+    }
+  }
+  release(&listid_lock);
+  return(listid);
+}
+
+
+
 
 // Allocate a page for each process's kernel stack.
 // Map it high in memory, followed by an invalid
@@ -234,7 +292,7 @@ userinit(void)
 
   p = allocproc();
   initproc = p;
-  
+ 
   // allocate one user page and copy init's instructions
   // and data into it.
   uvminit(p->pagetable, initcode, sizeof(initcode));
@@ -243,7 +301,7 @@ userinit(void)
   // prepare for the very first "return" from kernel to user.
   p->trapframe->epc = 0;      // user program counter
   p->trapframe->sp = PGSIZE;  // user stack pointer
-
+  p->cur_max = MAXVA - 2 * PGSIZE;  //hw5.1a
   safestrcpy(p->name, "initcode", sizeof(p->name));
   p->cwd = namei("/");
   p->state = RUNNABLE;
@@ -288,6 +346,8 @@ fork(void)
   struct proc *np;
   struct proc *p = myproc();
 
+
+
   // Allocate process.
   if((np = allocproc()) == 0){
     return -1;
@@ -300,6 +360,10 @@ fork(void)
     return -1;
   }
   np->sz = p->sz;
+  
+  //HW5.1a  add cur_max to child process
+  // Propagate cur_max to the child process
+  np->cur_max = p->cur_max;
 
   // copy saved user registers.
   *(np->trapframe) = *(p->trapframe);

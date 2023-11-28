@@ -15,6 +15,12 @@
 #define MAXEFFPRIORITY 99
 #define PRSCHED 1
 #define SCHEDPOLICY SCHEDPRIORITY
+#define MAX_MMR 10 // maximum number of memory-mapped regions per process
+#define PROT_READ (1L << 1)
+#define PROT_WRITE (1L << 2)
+#define MAP_SHARED 0x01 /* Share changes */
+#define MAP_PRIVATE 0x02 /* Changes are private */
+#define MAP_ANONYMOUS 0x20 /* No associated file*/
 
 
 enum procstate { UNUSED, USED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };

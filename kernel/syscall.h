@@ -27,4 +27,6 @@
 #define SYS_prioritystate	26
 #define SYS_changepriority 27
 #define SYS_freepmem 28 //task 4.1
+#define SYS_mmap 29
+#define SYS_munmap 30
 

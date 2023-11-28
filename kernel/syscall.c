@@ -110,6 +110,8 @@ extern uint64 sys_getprocs(void);
 extern uint64 sys_getpriority(void);  //hw3 t1
 extern uint64 sys_setpriority(void);   //hw3 t1
 extern uint64 sys_freepmem(void);  //4.1
+extern uint64 sys_mmap(void);
+extern uint64 sys_munmap(void);
 
 static uint64 (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -138,7 +140,9 @@ static uint64 (*syscalls[])(void) = {
 [SYS_getpriority] sys_getpriority,  //hw3 task1
 [SYS_setpriority] sys_setpriority,  //hw3 task1
 [SYS_freepmem] sys_freepmem,
-//[SYS_freepmem] sys_freepmem, //4.1
+[SYS_mmap]    sys_mmap,
+[SYS_munmap]  sys_munmap,
+
 };
 
 void

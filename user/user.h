@@ -32,6 +32,9 @@ int setpriority(int); //hw3 task1
 int prioritystate(void); //hw3 t3
 int changepriority(int pid, int priority); //hw3 t3
 uint64 freepmem(void); //hw4.2
+uint64 mmap(void*, uint64, int, int, int, int);  //hw5.1a
+uint64 munmap(void*, uint64);
+
 
 // ulib.c
 int stat(const char*, struct stat*);
