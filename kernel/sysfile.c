@@ -502,16 +502,21 @@ sys_mmap(){
 
 //How to check for max length of length  
 /* Add error checking for length, prot, and flags arguments */
-  if (argaddr(1, &length) < 0 || length <= 0) 
+  if (argaddr(1, &length) < 0 || length <= 0){ 
     return -1;
+   } 
 
-  if (argint(2, &prot) < 0   || (prot != PROT_READ && prot != PROT_WRITE))  //needs sys/mman.h to work?
+
+  if (argint(2, &prot) < 0  ){  //need to add error check    || prot != 
+    printf("Error in prot check\n");
     return -1;
-
-  if (argint(3, &flags) <0    || (flags & ~(MAP_SHARED | MAP_PRIVATE)) != 0) //needs sys/mman.h to work?
+  }
+  
+  if (argint(3, &flags) <0    ){ //need to add error check   || flags != Map_private
+    printf("Error in flag check\n");
     return -1;
-
-// Search p->mmr[] for unused location
+  }
+// Search p->mmr[] for unused location 
   for (int i = 0; i < MAX_MMR; i++) {
     if (p->mmr[i].valid == 0) {
       newmmr = &(p->mmr[i]);

@@ -302,6 +302,9 @@ userinit(void)
   p->trapframe->epc = 0;      // user program counter
   p->trapframe->sp = PGSIZE;  // user stack pointer
   p->cur_max = MAXVA - 2 * PGSIZE;  //hw5.1a
+  
+  printf("__________In proc.c: MAXVA is %p\n", MAXVA);//hw5.1b
+  printf("__________In proc.c: p->cur_max  is %p\n", p->cur_max);
   safestrcpy(p->name, "initcode", sizeof(p->name));
   p->cwd = namei("/");
   p->state = RUNNABLE;

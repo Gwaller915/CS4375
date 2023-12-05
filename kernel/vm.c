@@ -79,8 +79,10 @@ kvminithart()
 //   12..20 -- 9 bits of level-0 index.
 //    0..11 -- 12 bits of byte offset within the page.
 pte_t *
+
 walk(pagetable_t pagetable, uint64 va, int alloc)
 {
+  //printf("MAXVA %d", MAXVA);
   if(va >= MAXVA)
     panic("walk");
 
@@ -107,6 +109,7 @@ walkaddr(pagetable_t pagetable, uint64 va)
   pte_t *pte;
   uint64 pa;
 
+  //printf("MAXVA %p", MAXVA);
   if(va >= MAXVA)
     return 0;
 
@@ -338,6 +341,7 @@ uvmcopy(pagetable_t old, pagetable_t new, uint64 sz)
 
  err:
   uvmunmap(new, 0, i / PGSIZE, 1);
+  printf("Error in uvmunmap\n");
   return -1;
 }
 
@@ -365,8 +369,10 @@ copyout(pagetable_t pagetable, uint64 dstva, char *src, uint64 len)
   while(len > 0){
     va0 = PGROUNDDOWN(dstva);
     pa0 = walkaddr(pagetable, va0);
-    if(pa0 == 0)
+    if(pa0 == 0){
+      printf("Error in copyout, Pa0 is 0\n");
       return -1;
+    }
     n = PGSIZE - (dstva - va0);
     if(n > len)
       n = len;
@@ -390,8 +396,10 @@ copyin(pagetable_t pagetable, char *dst, uint64 srcva, uint64 len)
   while(len > 0){
     va0 = PGROUNDDOWN(srcva);
     pa0 = walkaddr(pagetable, va0);
-    if(pa0 == 0)
+    if(pa0 == 0){
+      printf("Error in copy in pa0 is 0\n");
       return -1;
+    }
     n = PGSIZE - (srcva - va0);
     if(n > len)
       n = len;
@@ -417,8 +425,10 @@ copyinstr(pagetable_t pagetable, char *dst, uint64 srcva, uint64 max)
   while(got_null == 0 && max > 0){
     va0 = PGROUNDDOWN(srcva);
     pa0 = walkaddr(pagetable, va0);
-    if(pa0 == 0)
+    if(pa0 == 0){
+      printf("Error in copyinstr\n");
       return -1;
+    }
     n = PGSIZE - (srcva - va0);
     if(n > max)
       n = max;
@@ -443,6 +453,7 @@ copyinstr(pagetable_t pagetable, char *dst, uint64 srcva, uint64 max)
   if(got_null){
     return 0;
   } else {
+    printf("Error in copyinstr\n");
     return -1;
   }
 }
