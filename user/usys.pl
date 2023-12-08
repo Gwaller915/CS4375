@@ -37,3 +37,7 @@ entry("sbrk");
 entry("sleep");
 entry("uptime");
 entry("getprocs");
+entry("sem_init");
+entry("sem_destroy");
+entry("sem_wait"); 
+entry("sem_post");

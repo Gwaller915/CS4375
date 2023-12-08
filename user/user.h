@@ -26,6 +26,11 @@ int sleep(int);
 int uptime(void);
 int getprocs(struct pstat*);
 
+int sem_init(struct sem_t *sem, int pshared, unsigned int value);
+int sem_destroy(struct sem_t *sem);
+int sem_wait(struct sem_t *sem);
+int sem_post(struct sem_t *sem);
+
 // ulib.c
 int stat(const char*, struct stat*);
 char* strcpy(char*, const char*);
