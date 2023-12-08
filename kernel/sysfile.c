@@ -528,7 +528,7 @@ sys_mmap(){
   if (newmmr) {
 
     /* Calculate the start address of the new mapped region, make sure it starts on a page boundary */
-    start_addr = PGROUNDDOWN(p->cur_max - length) & ~(PGSIZE - 1);  //hw5.1
+    start_addr = PGROUNDDOWN(p->cur_max - length);// & ~(PGSIZE - 1);  //hw5.1
     newmmr->valid = 1;
     newmmr->addr = start_addr;
     newmmr->length = p->cur_max - start_addr;

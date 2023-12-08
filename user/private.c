@@ -80,8 +80,8 @@ main(int argc, char *argv[])
     printf("L: private after consumer.\n");
     printf("total = %d\n", buffer->total);
     
-    munmap(buffer, sizeof(buffer_t));  //hw4.1c
-    printf("L: after munmap.\n");
+    //munmap(buffer, sizeof(buffer_t));  //hw4.1c
+    //printf("L: after munmap.\n");
 
     exit(0);
 }
