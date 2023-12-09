@@ -139,7 +139,9 @@ int sem_destroy(struct sem_t *s){
 int sem_wait(struct sem_t *s){
    acquire(&s->lock);
    while (s->count <= 0){
+     s->count++;
      sleep(&s);
+     
    }
    s->count--;
    release(&s->lock); 
