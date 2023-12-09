@@ -107,3 +107,54 @@ sys_getprocs(void)
     return -1;
   return(procinfo(addr));
 }
+
+struct semtab {
+    struct spinlock lock;
+    int count;
+};
+
+//extern struct semtab semtable;
+
+//#include "semaphore.h" // Include the semaphore data structure
+
+//Begins initial count and lock for semaphore
+int sys_sem_init(struct sem_t *s, int *p, int validValue) {
+  s->count = 0;
+  s->valid = validValue;
+  initlock(&semtable.lock, "semtable");
+  for (int i = 0; i < NSEM; i++)
+    initlock(&semtable.sem[i].lock, "sem");
+    
+}
+
+//Locks before reseting the count to zero
+int sem_destroy(struct sem_t *s){
+  acquire(&s->lock);
+  s->count = 0;
+  release(&s->lock);
+}
+
+// A mix of psuedo code for sem wait
+//Allows process threads to be accessed one at a time depending on the count
+int sem_wait(struct sem_t *s){
+   acquire(&s->lock);
+   while (s->count <= 0){
+     sleep(&s);
+   }
+   s->count--;
+   release(&s->lock); 
+}
+
+//Post will increment semaphore to signal when a new resource is available.
+int sem_post(struct sem_t *sem){
+  acquire(&s->lock);
+  s->count++;
+  
+  if(s->count >0){
+   s-count--;
+   wakeup(&s)
+  }
+  
+  release(&sem->lock);
+}
+
